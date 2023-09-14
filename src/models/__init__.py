@@ -1,23 +1,45 @@
-from peewee import Model
-from playhouse.postgres_ext import PostgresqlDatabase
-from src.config import DatabaseSettings
-
-db_settings = DatabaseSettings()
-
-psql_db = PostgresqlDatabase(
-    db_settings.database_name,
-    user = db_settings.database_user,
-    password = db_settings.database_password,
-    host = db_settings.database_host,
-    port = db_settings.database_port,
-)
-
-
-class BaseModel(Model):
-    class Meta:
-        pass
-        database = psql_db
+from peewee import CharField, FloatField, IntegerField, ForeignKeyField
+from src.models.db_conf import BaseModel, psql_db
 
 def create_tables():
     with psql_db:
-        psql_db.create_tables([])
+        psql_db.create_tables([
+            Usuario,
+            Producto,
+            Orden,
+            Reporte,
+            OrdenProducto,
+            ReporteProducto,
+        ])
+
+class Usuario(BaseModel):
+    email = CharField(unique=True)
+    nombre = CharField(max_length=50)
+    password = CharField()
+
+
+class Producto(BaseModel):
+    nombre_producto = CharField(unique=True, max_length=250)
+    precio_unitario = FloatField()
+    cantidad = IntegerField()
+
+
+class Orden(BaseModel):
+    usuario = ForeignKeyField(Usuario, backref='ordenes')
+    nombre_cliente = CharField(max_length=200)
+    precio_total_orden = FloatField()
+
+
+class OrdenProducto(BaseModel):
+    orden = ForeignKeyField(Orden, backref='productos_en_orden')
+    producto = ForeignKeyField(Producto, backref='ordenes')
+
+
+class Reporte(BaseModel):
+    cantidad_productos = IntegerField()
+    precio_total = FloatField()
+
+
+class ReporteProducto(BaseModel):
+    reporte = ForeignKeyField(Reporte, backref='reporte_productos')
+    producto = ForeignKeyField(Producto, backref='reportes')
