@@ -1,5 +1,6 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, APIRouter
 from src.models import psql_db, create_tables
+from src.routers import productos_router, usuarios_router
 
 app = FastAPI(
     title='Prueba técnica finvero',
@@ -7,9 +8,10 @@ app = FastAPI(
     version='1.0.0',
 )
 
-@app.get('/')
-def read_root():
-    return {'Hello': 'world'}
+api_v1 = APIRouter(prefix='/api/v1')
+api_v1.include_router(usuarios_router)
+api_v1.include_router(productos_router)
+app.include_router(api_v1)
 
 
 @app.on_event('startup')
