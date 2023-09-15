@@ -15,6 +15,5 @@ psql_db = PostgresqlDatabase(
 
 class BaseModel(Model):
     class Meta:
-        pass
         database = psql_db
 

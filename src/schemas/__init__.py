@@ -10,6 +10,12 @@ class UsuarioSchema(BaseModel):
     password: SecretStr
 
 
+class UsuarioOutSchema(BaseModel):
+    email: EmailStr
+    nombre: StrictStr
+    password: bytes
+
+
 class ProductoSchema(BaseModel):
     nombre_producto: StrictStr
     precio_unitario: NonNegativeFloat

@@ -1,9 +1,13 @@
 import peewee
-from fastapi import APIRouter, status, HTTPException
+from fastapi import APIRouter, status, HTTPException, Depends
 from src.schemas import ProductoSchema
 from src.models import Producto
+from src.dependencies import oauth2_schema
 
-router = APIRouter(prefix='/productos')
+router = APIRouter(
+    prefix='/productos',
+    dependencies=[Depends(oauth2_schema)]
+)
 
 @router.post(
     '', response_model=ProductoSchema,

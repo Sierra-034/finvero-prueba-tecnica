@@ -1,3 +1,4 @@
+import bcrypt
 from peewee import (
     CharField, FloatField, IntegerField,
     ForeignKeyField, ManyToManyField
@@ -19,6 +20,24 @@ class Usuario(BaseModel):
     email = CharField(unique=True)
     nombre = CharField(max_length=50)
     password = CharField()
+
+    @classmethod
+    def authenticate(cls, email, password):
+        user_authenticated = cls.get_or_none(
+            cls.email == email)
+
+        if not user_authenticated:
+            return None
+        
+        encoded_password = password.encode('utf-8')
+        encoded_hasehd_password = user_authenticated.password.encode('utf-8')
+        if user_authenticated and bcrypt.checkpw(encoded_password, encoded_hasehd_password):
+            return user_authenticated
+
+    @classmethod
+    def create_password(cls, password):
+        _bytes = password.encode('utf-8')
+        return bcrypt.hashpw(_bytes, bcrypt.gensalt(6))
 
 
 class Producto(BaseModel):

@@ -2,7 +2,7 @@ from fastapi import FastAPI, APIRouter
 from src.models import psql_db, create_tables
 from src.routers import (
     productos_router, usuarios_router,
-    ordenes_router
+    ordenes_router, authentication_router,
 )
 
 app = FastAPI(
@@ -12,6 +12,7 @@ app = FastAPI(
 )
 
 api_v1 = APIRouter(prefix='/api/v1')
+api_v1.include_router(authentication_router)
 api_v1.include_router(usuarios_router)
 api_v1.include_router(productos_router)
 api_v1.include_router(ordenes_router)

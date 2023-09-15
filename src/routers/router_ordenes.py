@@ -1,17 +1,21 @@
 import peewee
-from typing import List
+from typing import List, Dict
 from functools import reduce
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
 from src.schemas import (
     OrdenSchema, OrdenOutSchema, ProductoSchema,
     OrdenOutListSchema
 )
 from src.models import Producto, Orden, Usuario
+from src.dependencies import oauth2_schema, decode_token_dependency
 
 router = APIRouter(prefix='/ordenes')
 
-@router.get('/{orden_id}', response_model=OrdenOutListSchema)
-def get_ordenes(orden_id: int):
+@router.get(
+    '/{orden_id}', response_model=OrdenOutListSchema,
+    dependencies=[Depends(oauth2_schema)]
+)
+def get_orden_detail(orden_id: int):
     orden = Orden.get_by_id(orden_id)
     productos = orden.productos
     productos_de_orden = list()
@@ -32,9 +36,9 @@ def get_ordenes(orden_id: int):
 
 @router.post(
     '', response_model=OrdenOutSchema,
-    response_model_exclude={'lista_productos'}
+    response_model_exclude={'lista_productos'},
 )
-def create_orden(orden: OrdenSchema):
+def create_orden(orden: OrdenSchema, user_data: dict = Depends(decode_token_dependency)):
     lista_productos = orden.lista_productos
     lista_productos = [
         producto.model_dump(mode='python')
@@ -52,7 +56,7 @@ def create_orden(orden: OrdenSchema):
     ]
 
     # Crea la orden sin los productos asociados
-    usuario = Usuario.get_by_id(1)
+    usuario = Usuario.get_by_id(user_data['usuario_id'])
     orden = Orden.create(
         usuario=usuario,
         nombre_cliente=orden.nombre_cliente,
