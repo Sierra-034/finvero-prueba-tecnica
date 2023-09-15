@@ -7,6 +7,18 @@
 4. Now type `\c finvero_database` and you'll connect to *finvero_database* then you can list the tables with `\dt`
 4. To quit from the psql client use `\q`
 
+### Create environment variables
+Create a file called `.env` in which you'll need to specify the next variables.
+```.env
+DATABASE_NAME=finvero_database
+DATABASE_USER=postgres
+DATABASE_PASSWORD=somepassword
+DATABASE_HOST=localhost
+DATABASE_PORT=5432
+
+SECRET_KEY=somesecretkey
+```
+
 ### Execute the code
 1. Create the virtual environment `python -m venv .venv`
 2. Activate the environment `source .venv/bin/activate`
