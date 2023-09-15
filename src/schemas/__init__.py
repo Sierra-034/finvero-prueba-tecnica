@@ -29,6 +29,7 @@ class OrdenOutSchema(OrdenSchema):
     numero_orden: int
     lista_productos: List[ProductoInOrdenSchema] = None
     precio_total: float
+    cantidad_productos: int
 
 
 class OrdenOutListSchema(BaseModel):
