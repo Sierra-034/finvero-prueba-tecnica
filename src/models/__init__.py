@@ -1,4 +1,7 @@
-from peewee import CharField, FloatField, IntegerField, ForeignKeyField
+from peewee import (
+    CharField, FloatField, IntegerField,
+    ForeignKeyField, ManyToManyField
+)
 from src.models.db_conf import BaseModel, psql_db
 
 def create_tables():
@@ -25,21 +28,17 @@ class Producto(BaseModel):
 
 
 class Orden(BaseModel):
-    usuario = ForeignKeyField(Usuario, backref='ordenes')
-    nombre_cliente = CharField(max_length=200)
     precio_total_orden = FloatField()
-
-
-class OrdenProducto(BaseModel):
-    orden = ForeignKeyField(Orden, backref='productos_en_orden')
-    producto = ForeignKeyField(Producto, backref='ordenes')
+    nombre_cliente = CharField(max_length=200)
+    usuario = ForeignKeyField(Usuario, backref='ordenes')
+    productos = ManyToManyField(Producto, backref='ordenes')
 
 
 class Reporte(BaseModel):
     cantidad_productos = IntegerField()
     precio_total = FloatField()
+    productos = ManyToManyField(Producto, backref='reportes')
 
 
-class ReporteProducto(BaseModel):
-    reporte = ForeignKeyField(Reporte, backref='reporte_productos')
-    producto = ForeignKeyField(Producto, backref='reportes')
+OrdenProducto = Orden.productos.get_through_model()
+ReporteProducto = Reporte.productos.get_through_model()
